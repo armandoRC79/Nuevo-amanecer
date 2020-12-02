@@ -29,13 +29,13 @@ public class Producto {
 	@NotNull
 	private String imagen;
     @NotNull
-    private String precio;
+    private double precio;
     
     public Producto() {
     }
 
 	public Producto(@NotNull @Size(max = 100) String nombre, @NotNull @Size(max = 200) String descripcion,
-			@NotNull String imagen, @NotNull String precio) {
+			@NotNull String imagen, @NotNull double precio) {
 		this.nombre = nombre;
 		this.descripcion = descripcion;
 		this.imagen = imagen;
