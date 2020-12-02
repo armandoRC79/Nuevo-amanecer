@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
+import com.uacm.exceps.ExcepcionPedido;
+
 import lombok.Data;
 
 @Entity
@@ -24,53 +26,35 @@ public class Pedido {
     
     @NotNull
 	private Date fecha;
+    @NotNull
     @ManyToOne
     @JoinColumn (name="id_producto")
-	private Producto producto;
-	@ManyToOne
+	private Inventario inventario;
+    @NotNull
+    @ManyToOne
 	@JoinColumn (name="id_usuario")
 	private Usuario usuario;
-	@NotNull
 	private int piezasPedidas;
 	
 	public Pedido() {
 	}
-	
-	public Pedido(@NotNull Date fecha, Producto producto, Usuario usuario, @NotNull int piezasPedidas) {
-		this.fecha = fecha;
-		this.producto = producto;
-		this.usuario = usuario;
-		this.piezasPedidas = piezasPedidas;
-	}
-	public Long getId() {
-		return id;
-	}
-	public void setId(Long id) {
-		this.id = id;
-	}
-	public Date getFecha() {
-		return fecha;
-	}
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
-	}
-	public Producto getProducto() {
-		return producto;
-	}
-	public void setProducto(Producto producto) {
-		this.producto = producto;
-	}
-	public Usuario getUsuario() {
-		return usuario;
-	}
-	public void setUsuario(Usuario usuario) {
-		this.usuario = usuario;
-	}
-	public int getPiezasPedidas() {
-		return piezasPedidas;
-	}
-	public void setPiezasPedisas(int piezasPedidas) {
-		this.piezasPedidas = piezasPedidas;
+
+	public Pedido(@NotNull Date fecha, @NotNull Inventario inventario, 
+			@NotNull Usuario usuario, int piezasPedidas) {
+		try {
+			checkParametros(fecha,inventario, usuario, piezasPedidas);
+			this.fecha = fecha;
+			this.inventario = inventario;
+			this.usuario = usuario;
+			this.piezasPedidas = piezasPedidas;
+		} catch (ExcepcionPedido e) {
+			e.printStackTrace();
+		}
 	}
 	
+	private void checkParametros(Date fecha, Inventario inventario, 
+			Usuario usuario, int piezasPedidas) throws ExcepcionPedido {
+		if(fecha == null || inventario == null || usuario == null || piezasPedidas < 0)
+			throw new ExcepcionPedido("Algún parámetro es nulo o el número de piezas es negativa");		
+	}
 }

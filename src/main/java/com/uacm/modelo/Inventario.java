@@ -10,7 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import com.sun.istack.NotNull;
-
+import com.uacm.exceps.ExcepcionInventario;
 import lombok.Data;
 
 @Entity
@@ -31,8 +31,41 @@ public class Inventario {
 	}
 
 	public Inventario(Producto producto, int piezas) {
-		this.producto = producto;
-		this.piezas = piezas;
+		try {
+			checkParametros(producto, piezas);
+			this.producto = producto;
+			this.piezas = piezas;
+		} catch (ExcepcionInventario e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void checkParametros(Producto producto, 
+			int piezas) throws ExcepcionInventario {
+		if(producto == null || piezas < 0)
+			throw new ExcepcionInventario("Producto nulo o número de piezas negativo ");		
+	}
+	
+	public boolean upInventario(int piezas) {
+		boolean success = false;
+		
+		if(piezas >= 0) {
+			this.piezas = this.piezas + piezas;
+			success = true;
+		}
+		
+		return success;
+	}
+	
+	public boolean downInventario(int piezas) {
+		boolean success = false;
+		
+		if(piezas > this.piezas && piezas > 0) {
+			this.piezas = this.piezas - piezas;
+			success = true;
+		}
+			
+		return success;
 	}
 	
 }

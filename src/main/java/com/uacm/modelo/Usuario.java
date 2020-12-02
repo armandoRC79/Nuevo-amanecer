@@ -6,8 +6,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.validation.constraints.NotNull;
 
-import com.sun.istack.NotNull;
+import com.uacm.exceps.ExcepcionUsuario;
 
 import lombok.Data;
 
@@ -30,10 +31,20 @@ public class Usuario {
 	public Usuario() {
 	}
 	
-	public Usuario(String nombre, String password, String rol) {
-		this.nombre = nombre;
-		this.password = password;
-		this.rol = rol;
+	public Usuario(@NotNull String nombre, @NotNull String password, @NotNull String rol) {
+		try {
+			checkParametros(nombre, password, rol);
+			this.nombre = nombre;
+			this.password = password;
+			this.rol = rol;
+		} catch (ExcepcionUsuario e) {
+			e.printStackTrace();
+		}
 	}
-
+	
+	private void checkParametros(String nombre, String password, String rol) throws ExcepcionUsuario {
+		if(nombre == null || password == null || rol == null )
+			throw new ExcepcionUsuario("Existe un parametro nulo");
+	}
+	
 }

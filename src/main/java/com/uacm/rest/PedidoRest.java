@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import com.uacm.modelo.Inventario;
 import com.uacm.modelo.Pedido;
-import com.uacm.modelo.Producto;
 import com.uacm.modelo.Usuario;
 import com.uacm.repositorio.PedidoRepositorio;
 import com.uacm.servicios.PedidoServicios;
@@ -41,7 +41,7 @@ public class PedidoRest {
 	
 	//Este método sirve para guardar y editar ya que la función save guarda el registro si no existe o lo edita si ya está en BD
 	@PostMapping (value="/registra-pedido")
-	public Pedido savePedidos(WebRequest request, @RequestParam("producto") Producto producto,
+	public Pedido savePedidos(WebRequest request, @RequestParam("inventario") Inventario inventario,
             @RequestParam("fecha") String fecha, @RequestParam("usuario") Usuario usuario, @RequestParam("piezas") int piezas ){
 		
 		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
@@ -53,7 +53,7 @@ public class PedidoRest {
 			e.printStackTrace();
 		}
         
-        Pedido pedido = new Pedido(fechaDate, producto, usuario, piezas);
+        Pedido pedido = new Pedido(fechaDate, inventario, usuario, piezas);
         
 
 		return pedidoRepositorio.save(pedido);
