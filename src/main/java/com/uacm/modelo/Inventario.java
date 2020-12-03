@@ -60,7 +60,7 @@ public class Inventario {
 	public boolean downInventario(int piezas) {
 		boolean success = false;
 		
-		if(piezas > this.piezas && piezas > 0) {
+		if(piezas <= this.piezas && piezas > 0) {
 			this.piezas = this.piezas - piezas;
 			success = true;
 		}
