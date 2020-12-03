@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 
+import com.uacm.exceps.ExcepcionProducto;
 import com.uacm.modelo.Producto;
 import com.uacm.repositorio.ProductoRepositorio;
 import com.uacm.servicios.ProductoServicios;
@@ -35,7 +36,7 @@ public class ProductoRest {
 		@PostMapping (value="/registra-producto")
 		public Producto saveProducto(WebRequest request, @RequestParam("nombre") String nombre,
 	            @RequestParam("descripcion") String descripcion, @RequestParam("imagen") String imagen
-	            , @RequestParam("precio") double precio ){
+	            , @RequestParam("precio") double precio ) throws ExcepcionProducto{
 			
 			
 	        Producto producto = new Producto(nombre, descripcion, imagen, precio);

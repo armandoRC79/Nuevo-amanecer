@@ -38,16 +38,13 @@ public class Producto {
 
 	public Producto(@NotNull @Size(max = 100) String nombre, 
 			@NotNull @Size(max = 200) String descripcion,
-			@NotNull String imagen, @NotNull double precio) {
-		try {
+			@NotNull String imagen, @NotNull double precio) throws ExcepcionProducto {
 			checkParametros(nombre, descripcion, imagen, precio);
 			this.nombre = nombre;
 			this.descripcion = descripcion;
 			this.imagen = imagen;
 			this.precio = precio;
-		} catch (ExcepcionProducto e) {
-			e.printStackTrace();
-		}
+
 	}
 	
 	private void checkParametros(String nombre, String descripcion, 

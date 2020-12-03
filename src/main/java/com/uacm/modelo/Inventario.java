@@ -30,20 +30,16 @@ public class Inventario {
 	public Inventario() {
 	}
 
-	public Inventario(Producto producto, int piezas) {
-		try {
+	public Inventario(Producto producto, int piezas) throws ExcepcionInventario {
 			checkParametros(producto, piezas);
 			this.producto = producto;
 			this.piezas = piezas;
-		} catch (ExcepcionInventario e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private void checkParametros(Producto producto, 
 			int piezas) throws ExcepcionInventario {
 		if(producto == null || piezas < 0)
-			throw new ExcepcionInventario("Producto nulo o número de piezas negativo ");		
+			throw new ExcepcionInventario("Producto nulo o número de piezas negativo");		
 	}
 	
 	public boolean upInventario(int piezas) {

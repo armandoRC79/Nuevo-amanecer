@@ -31,15 +31,11 @@ public class Usuario {
 	public Usuario() {
 	}
 	
-	public Usuario(@NotNull String nombre, @NotNull String password, @NotNull String rol) {
-		try {
+	public Usuario(@NotNull String nombre, @NotNull String password, @NotNull String rol) throws ExcepcionUsuario {
 			checkParametros(nombre, password, rol);
 			this.nombre = nombre;
 			this.password = password;
 			this.rol = rol;
-		} catch (ExcepcionUsuario e) {
-			e.printStackTrace();
-		}
 	}
 	
 	private void checkParametros(String nombre, String password, String rol) throws ExcepcionUsuario {

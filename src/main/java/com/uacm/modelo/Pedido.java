@@ -40,16 +40,14 @@ public class Pedido {
 	}
 
 	public Pedido(@NotNull Date fecha, @NotNull Inventario inventario, 
-			@NotNull Usuario usuario, int piezasPedidas) {
-		try {
-			checkParametros(fecha,inventario, usuario, piezasPedidas);
-			this.fecha = fecha;
-			this.inventario = inventario;
-			this.usuario = usuario;
-			this.piezasPedidas = piezasPedidas;
-		} catch (ExcepcionPedido e) {
-			e.printStackTrace();
-		}
+			@NotNull Usuario usuario, int piezasPedidas) throws ExcepcionPedido {
+		
+		checkParametros(fecha,inventario, usuario, piezasPedidas);
+		this.fecha = fecha;
+		this.inventario = inventario;
+		this.usuario = usuario;
+		this.piezasPedidas = piezasPedidas;
+
 	}
 	
 	private void checkParametros(Date fecha, Inventario inventario, 
