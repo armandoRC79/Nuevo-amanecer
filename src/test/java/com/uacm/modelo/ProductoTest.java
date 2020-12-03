@@ -1,5 +1,7 @@
 package com.uacm.modelo;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
@@ -13,5 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @Slf4j
 public class ProductoTest {
+	
+	@Test
+	public void test() {
+		assertTrue(false);
+	}
 
 }
