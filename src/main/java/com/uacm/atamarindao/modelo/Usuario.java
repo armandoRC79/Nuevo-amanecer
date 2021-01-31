@@ -1,4 +1,4 @@
-package com.uacm.modelo;
+package com.uacm.atamarindao.modelo;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,13 +8,15 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.validation.constraints.NotNull;
 
-import com.uacm.exceps.ExcepcionUsuario;
-
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@AllArgsConstructor @NoArgsConstructor @Builder
 public class Usuario {
 
     @Id
@@ -27,20 +29,8 @@ public class Usuario {
 	private String password;
 	@NotNull
 	private String rol;
-	
-	public Usuario() {
-	}
-	
-	public Usuario(@NotNull String nombre, @NotNull String password, @NotNull String rol) throws ExcepcionUsuario {
-			checkParametros(nombre, password, rol);
-			this.nombre = nombre;
-			this.password = password;
-			this.rol = rol;
-	}
-	
-	private void checkParametros(String nombre, String password, String rol) throws ExcepcionUsuario {
-		if(nombre == null || password == null || rol == null )
-			throw new ExcepcionUsuario("Existe un parametro nulo");
-	}
+	@NotNull
+	private String status;
+
 	
 }

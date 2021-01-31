@@ -1,18 +1,26 @@
-package com.uacm.modelo;
+package com.uacm.atamarindao.modelo;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.Transient;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import com.uacm.exceps.ExcepcionPedido;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import lombok.Data;
 
@@ -24,35 +32,33 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
+    @Column(name = "usuario_id")
+    private Long usuarioId;
+    
+    @NotNull
+    private String numberoPedido;
+    
     @NotNull
 	private Date fecha;
-    @NotNull
-    @ManyToOne
-    @JoinColumn (name="id_producto")
-	private Inventario inventario;
-    @NotNull
-    @ManyToOne
-	@JoinColumn (name="id_usuario")
-	private Usuario usuario;
-	private int piezasPedidas;
+    
+    @Valid
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "pedido_id")
+    private List<ProductoPedido> productos;
 	
-	public Pedido() {
-	}
+    private String status;
+    
+    @Transient
+    private Usuario usuario;
+    
+    public Pedido(){
+        productos = new ArrayList<>();
+    }
 
-	public Pedido(@NotNull Date fecha, @NotNull Inventario inventario, 
-			@NotNull Usuario usuario, int piezasPedidas) throws ExcepcionPedido {
-		
-		checkParametros(fecha,inventario, usuario, piezasPedidas);
-		this.fecha = fecha;
-		this.inventario = inventario;
-		this.usuario = usuario;
-		this.piezasPedidas = piezasPedidas;
-
-	}
+    @PrePersist
+    public void prePersist() {
+        this.fecha = new Date();
+    }
 	
-	private void checkParametros(Date fecha, Inventario inventario, 
-			Usuario usuario, int piezasPedidas) throws ExcepcionPedido {
-		if(fecha == null || inventario == null || usuario == null || piezasPedidas < 0)
-			throw new ExcepcionPedido("Algún parámetro es nulo o el número de piezas es negativa");		
-	}
 }

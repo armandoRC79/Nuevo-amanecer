@@ -1,4 +1,4 @@
-package com.uacm.servicios;
+package com.uacm.atamarindao.servicios;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +11,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.uacm.modelo.Pedido;
-import com.uacm.repositorio.PedidoRepositorio;
+import com.uacm.atamarindao.modelo.Pedido;
+import com.uacm.atamarindao.repositorio.PedidoRepositorio;
 
 @Service
-public class PedidoServicios implements PedidoRepositorio{
+public class PedidoServiciosImp implements PedidoRepositorio{
 	
 	@Autowired
 	PedidoRepositorio pedidoRepositorio;
@@ -107,7 +107,6 @@ public class PedidoServicios implements PedidoRepositorio{
 
 	@Override
 	public <S extends Pedido> S save(S entity) {
-		// TODO Auto-generated method stub
 		return pedidoRepositorio.save(entity);
 	}
 
@@ -175,6 +174,18 @@ public class PedidoServicios implements PedidoRepositorio{
 	public <S extends Pedido> boolean exists(Example<S> example) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+	@Override
+	public List<Pedido> findByUsuarioId(Long usuarioId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Pedido findByNumberoPedido(String numberoPedido) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

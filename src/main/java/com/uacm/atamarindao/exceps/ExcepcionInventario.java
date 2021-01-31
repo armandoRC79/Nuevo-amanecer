@@ -1,4 +1,4 @@
-package com.uacm.exceps;
+package com.uacm.atamarindao.exceps;
 
 public class ExcepcionInventario extends Exception{
 	

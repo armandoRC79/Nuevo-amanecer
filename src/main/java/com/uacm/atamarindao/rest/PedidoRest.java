@@ -1,45 +1,51 @@
-package com.uacm.rest;
+package com.uacm.atamarindao.rest;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.net.URI;
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.context.request.WebRequest;
 
-import com.uacm.exceps.ExcepcionPedido;
-import com.uacm.modelo.Inventario;
-import com.uacm.modelo.Pedido;
-import com.uacm.modelo.Usuario;
-import com.uacm.repositorio.PedidoRepositorio;
-import com.uacm.servicios.PedidoServicios;
+import com.uacm.atamarindao.modelo.Pedido;
+import com.uacm.atamarindao.servicios.PedidoServiciosImp;
 
 
 @RestController
-@RequestMapping ("/pedidos/")
+@RequestMapping ("/pedidos")
 public class PedidoRest {
 
 	@Autowired
-	private PedidoServicios pedidoServicios;
-	
-	@Autowired
-	private PedidoRepositorio pedidoRepositorio;
+	private PedidoServiciosImp pedidoServicios;
+
+	@GetMapping
+	public ResponseEntity<List<Pedido>> getAllPedidos(){
+		return ResponseEntity.ok(pedidoServicios.findAll());
+	}
 	
 	@GetMapping ("{id}")
 	public ResponseEntity<List<Pedido>> getAllPedidosByUsuario(@PathVariable ("id") Long idUsuario){
 		return ResponseEntity.ok(pedidoServicios.findAllByUser(idUsuario));
 	}
 	
+	@PostMapping
+	private ResponseEntity<Pedido> savePedido(@RequestBody Pedido pedido){
+		try {
+			Pedido pedidoGuardado = pedidoServicios.save(pedido);
+			return ResponseEntity.created(new URI("/pedidos/"+pedidoGuardado.getId())).body(pedidoGuardado);
+		}catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}
+	}
 	
+	
+	/*
 	//Este método sirve para guardar y editar ya que la función save guarda el registro si no existe o lo edita si ya está en BD
 	@PostMapping (value="/registra-pedido")
 	public Pedido savePedidos(WebRequest request, @RequestParam("inventario") Inventario inventario,
@@ -70,5 +76,5 @@ public class PedidoRest {
 		} else {
 			return "Pedido eliminado correctamente";
 		}
-	}
+	}*/
 }

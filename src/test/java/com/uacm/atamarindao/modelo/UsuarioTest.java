@@ -1,4 +1,4 @@
-package com.uacm.modelo;
+package com.uacm.atamarindao.modelo;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -9,37 +9,37 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.uacm.RicoTamarindoApplication;
-import com.uacm.exceps.ExcepcionUsuario;
-
-import lombok.extern.slf4j.Slf4j;
+import com.uacm.atamarindao.RicoTamarindoApplication;
+import com.uacm.atamarindao.exceps.ExcepcionUsuario;
 
 @SpringBootTest(classes= {RicoTamarindoApplication.class})
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Slf4j
+//@Slf4j
 public class UsuarioTest {
 	
 	@Test
 	public void testNombreNuloConstructor() throws ExcepcionUsuario {  
 		Throwable exception = assertThrows(ExcepcionUsuario.class,
-		        ()->{Usuario usuario = new Usuario (null,"pez85", "Administrador");} );
+		        ()->{@SuppressWarnings("unused")
+				Usuario usuario = new Usuario (1L,null,"pez85", "Administrador", "CREATE");} );
 		assertTrue(exception.getMessage().contains("Existe un parametro nulo"));
 	}
 	
 	@Test
 	public void testPsswNuloConstructor() throws ExcepcionUsuario {  
 		Throwable exception = assertThrows(ExcepcionUsuario.class,
-		        ()->{Usuario usuario = new Usuario ("Comer",null, "Administrador");} );
+		        ()->{@SuppressWarnings("unused")
+				Usuario usuario = new Usuario (1L,"Paco",null, "Administrador", "CREATE");} );
 		assertTrue(exception.getMessage().contains("Existe un parametro nulo"));
 	}
-	
+	/*
 	@Test
 	public void testRolNuloConstructor() throws ExcepcionUsuario {  
 		Throwable exception = assertThrows(ExcepcionUsuario.class,
-		        ()->{Usuario usuario = new Usuario ("Comer","pez85", null);} );
+		        ()->{Usuario usuario = new Usuario (1L,"Paco","pez85", "Administrador", "CREATE"} );
 		assertTrue(exception.getMessage().contains("Existe un parametro nulo"));
 	}
-	
+	*/
 	/*   Dado que java es extrictamente tipado, no es posible agregar otro tipo de variable 
 	 * es por esta razón que no aplica las pruebas con id:USP004
 	@Test
@@ -51,7 +51,7 @@ public class UsuarioTest {
 	
 	@Test
 	public void testConstructor() throws ExcepcionUsuario {  
-		Usuario usuario = new Usuario("Comer", "pez85", "Administrador");
+		Usuario usuario = new Usuario(1L,"Paco","pez85", "Administrador", "CREATE");
 		assertEquals("Comer", usuario.getNombre());
 		assertEquals("pez85", usuario.getPassword());
 		assertEquals("Administrador", usuario.getRol());

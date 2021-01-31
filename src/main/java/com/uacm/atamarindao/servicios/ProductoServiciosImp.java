@@ -1,20 +1,17 @@
-package com.uacm.servicios;
+package com.uacm.atamarindao.servicios;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import com.uacm.modelo.Producto;
-import com.uacm.repositorio.ProductoRepositorio;
+import com.uacm.atamarindao.modelo.Producto;
+import com.uacm.atamarindao.repositorio.ProductoRepositorio;
 
+//@Slf4j
 @Service
-public class ProductoServicios implements ProductoRepositorio {
+public class ProductoServiciosImp implements ProductoServicios {
 	
 	@Autowired
 	private ProductoRepositorio productoRepositorio;
@@ -25,135 +22,57 @@ public class ProductoServicios implements ProductoRepositorio {
 	}
 
 	@Override
-	public List<Producto> findAll(Sort sort) {
-		return productoRepositorio.findAll(sort);
-	}
-
-	@Override
-	public List<Producto> findAllById(Iterable<Long> ids) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Producto> List<S> saveAll(Iterable<S> entities) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void flush() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public <S extends Producto> S saveAndFlush(S entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void deleteInBatch(Iterable<Producto> entities) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void deleteAllInBatch() {
-		productoRepositorio.deleteAllInBatch();
-		
-	}
-
-	@Override
-	public Producto getOne(Long id) {
-		return productoRepositorio.getOne(id);
-	}
-
-	@Override
-	public <S extends Producto> List<S> findAll(Example<S> example) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Producto> List<S> findAll(Example<S> example, Sort sort) {
-		return productoRepositorio.findAll(example, sort);
-	}
-
-	@Override
-	public Page<Producto> findAll(Pageable pageable) {
-		return productoRepositorio.findAll(pageable);
-	}
-
-	@Override
-	public <S extends Producto> S save(S entity) {
-		return productoRepositorio.save(entity);
-	}
-
-	@Override
 	public Optional<Producto> findById(Long id) {
 		return productoRepositorio.findById(id);
 	}
 
 	@Override
-	public boolean existsById(Long id) {
-		// TODO Auto-generated method stub
-		return false;
+	public Producto save(Producto producto) {
+		producto.setStatus("EN EXISTENCIA");
+		return productoRepositorio.save(producto);
 	}
 
 	@Override
-	public long count() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void deleteById(Long id) {
-		productoRepositorio.deleteById(id);
-	}
-
-	@Override
-	public void delete(Producto entity) {
-		productoRepositorio.delete(entity);
+	public Producto update(Producto producto) {
+		Producto productoDB = findById(producto.getId()).get();
+		Producto pRespuesta = null;
 		
-	}
-
-	@Override
-	public void deleteAll(Iterable<? extends Producto> entities) {
-		// TODO Auto-generated method stub
+		if(productoDB != null) {
+			productoDB.setNombre(producto.getNombre());
+			productoDB.setDescripcion(producto.getDescripcion());
+			productoDB.setImagen(producto.getImagen());
+			productoDB.setPrecio(producto.getPrecio());
+			pRespuesta = productoDB;
+		}
 		
+		return productoRepositorio.save(pRespuesta);
 	}
 
 	@Override
-	public void deleteAll() {
-		// TODO Auto-generated method stub
-		
+	public Producto delete(Long id) {
+        Producto productoDB = findById(id).get();
+        Producto pRespuesta = null;
+        
+        if (productoDB != null){
+            productoDB.setStatus("DELETED");
+        	pRespuesta = productoDB;
+        }
+
+        return productoRepositorio.save(pRespuesta);
 	}
 
 	@Override
-	public <S extends Producto> Optional<S> findOne(Example<S> example) {
-		// TODO Auto-generated method stub
-		return null;
+	public Producto updateStock(Long id, Double cantidad) {
+        Producto productoDB = findById(id).get();
+        Producto pRespuesta = null;
+        
+        if (productoDB != null){
+            Double stock =  productoDB.getStock() + cantidad;
+            productoDB.setStock(stock);
+            pRespuesta = productoDB;
+        }
+
+        return productoRepositorio.save(pRespuesta);
 	}
-
-	@Override
-	public <S extends Producto> Page<S> findAll(Example<S> example, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Producto> long count(Example<S> example) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public <S extends Producto> boolean exists(Example<S> example) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-
+	
 }
