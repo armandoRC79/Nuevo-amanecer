@@ -1,4 +1,4 @@
-package com.uacm.atamarindao.modelo;
+package com.uacm.atamarindao.rest;
 
 import java.util.List;
 import java.util.Map;

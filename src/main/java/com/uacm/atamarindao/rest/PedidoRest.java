@@ -1,18 +1,28 @@
 package com.uacm.atamarindao.rest;
 
-import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uacm.atamarindao.modelo.Pedido;
 import com.uacm.atamarindao.servicios.PedidoServiciosImp;
 
@@ -26,55 +36,90 @@ public class PedidoRest {
 
 	@GetMapping
 	public ResponseEntity<List<Pedido>> getAllPedidos(){
-		return ResponseEntity.ok(pedidoServicios.findAll());
+        List<Pedido> pedidos = pedidoServicios.findAll();
+        ResponseEntity<List<Pedido>> respuesta = ResponseEntity.noContent().build();
+        
+        if (!pedidos.isEmpty()) {
+            respuesta = ResponseEntity.ok(pedidos);
+        }
+        
+        return  respuesta;
 	}
 	
+	@GetMapping(value = "/{id}")
+	public ResponseEntity<Pedido> getPedido(@PathVariable("id") long id){
+        Pedido pedido  = pedidoServicios.findById(id);
+        ResponseEntity<Pedido> respuesta = ResponseEntity.notFound().build();
+        
+        if (pedido != null) {
+            respuesta = ResponseEntity.ok(pedido);
+        }
+        
+        return respuesta;
+	}
+	/*
 	@GetMapping ("{id}")
 	public ResponseEntity<List<Pedido>> getAllPedidosByUsuario(@PathVariable ("id") Long idUsuario){
 		return ResponseEntity.ok(pedidoServicios.findAllByUser(idUsuario));
 	}
-	
+	*/
 	@PostMapping
-	private ResponseEntity<Pedido> savePedido(@RequestBody Pedido pedido){
-		try {
-			Pedido pedidoGuardado = pedidoServicios.save(pedido);
-			return ResponseEntity.created(new URI("/pedidos/"+pedidoGuardado.getId())).body(pedidoGuardado);
-		}catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}
-	}
-	
-	
-	/*
-	//Este método sirve para guardar y editar ya que la función save guarda el registro si no existe o lo edita si ya está en BD
-	@PostMapping (value="/registra-pedido")
-	public Pedido savePedidos(WebRequest request, @RequestParam("inventario") Inventario inventario,
-            @RequestParam("fecha") String fecha, @RequestParam("usuario") Usuario usuario, @RequestParam("piezas") int piezas ) throws ExcepcionPedido{
+	private ResponseEntity<Pedido> savePedido(@Valid @RequestBody Pedido pedido, BindingResult result){
 		
-		SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
-        Date fechaDate = null;
-        try {
-			fechaDate = formato.parse(fecha);
-		} catch (ParseException e) {
-			
-			e.printStackTrace();
-		}
+        if (result.hasErrors()){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, this.formatoMensaje(result));
+        }
         
-        Pedido pedido = new Pedido(fechaDate, inventario, usuario, piezas);
-        
+        Pedido pedidoDB = pedidoServicios.save(pedido);
 
-		return pedidoRepositorio.save(pedido);
+        return  ResponseEntity.status( HttpStatus.CREATED).body(pedidoDB);
 	}
 	
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Pedido> updatePedido(@PathVariable("id") long id, @RequestBody Pedido pedido) {
+        pedido.setId(id);
+        Pedido pedidoActual = pedidoServicios.update(pedido);
+        ResponseEntity<Pedido> respuesta = ResponseEntity.notFound().build();
 
-	@GetMapping (value="/elimina-pedido")
-	public String deletePedido(WebRequest request, @RequestParam ("id") Long idPedido){
-		pedidoRepositorio.deleteById(idPedido);
-		Optional<Pedido> pedido = pedidoRepositorio.findById(idPedido);
-		if(pedido.isPresent()) {
-			return "Ha ocurrido un error";
-		} else {
-			return "Pedido eliminado correctamente";
-		}
-	}*/
+        if (pedidoActual != null) {
+            respuesta = ResponseEntity.ok(pedidoActual);
+        }
+        
+        return  respuesta;
+    }
+	
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Pedido> deleteInvoice(@PathVariable("id") long id) {
+        Pedido pedido = pedidoServicios.findById(id);
+        ResponseEntity<Pedido> respuesta = ResponseEntity.notFound().build();
+        
+        if (pedido != null) {
+        	pedido = pedidoServicios.delete(pedido);
+        	respuesta = ResponseEntity.ok(pedido);
+        }
+
+        return respuesta;
+    }
+    
+    private String formatoMensaje( BindingResult result){
+        List<Map<String,String>> errors = result.getFieldErrors().stream()
+                .map(err ->{
+                    Map<String,String> error =  new HashMap<>();
+                    error.put(err.getField(), err.getDefaultMessage());
+                    return error;
+
+                }).collect(Collectors.toList());
+        MensajeError errorMessage = MensajeError.builder()
+                .code("01")
+                .messages(errors).build();
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString="";
+        try {
+            jsonString = mapper.writeValueAsString(errorMessage);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return jsonString;
+    }
+	
 }

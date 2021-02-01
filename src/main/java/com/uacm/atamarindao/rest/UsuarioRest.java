@@ -21,7 +21,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uacm.atamarindao.modelo.MensajeError;
 import com.uacm.atamarindao.modelo.Usuario;
 import com.uacm.atamarindao.servicios.UsuarioServiciosImp;
 
@@ -44,21 +43,13 @@ public class UsuarioRest {
 	}
 	
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Usuario> getUsuario(@PathVariable("id") long id) {
+    public ResponseEntity<Usuario> getUsuario(@PathVariable("id") Long id) {
         Usuario usuario =  usuarioServicios.findById(id).get();
         ResponseEntity<Usuario> respuesta = ResponseEntity.notFound().build();
         if (usuario != null){
             respuesta =  ResponseEntity.ok(usuario);
         }
         return respuesta;
-    	
-      /*//  log.info("Fetching User with id {}", id);
-        Usuario usuario = usuarioServicios.findById(id).get();
-        if (  null == usuario) {
-        //    log.error("User with id {} not found.", id);
-            return  ResponseEntity.notFound().build();
-        }
-        return  ResponseEntity.ok(usuario);*/
     }
 	
 	@PostMapping
@@ -70,12 +61,6 @@ public class UsuarioRest {
         Usuario usuarioCreado =  usuarioServicios.save(usuario);
         return ResponseEntity.status(HttpStatus.CREATED).body(usuarioCreado);
 		
-	/*	try {
-			Usuario usuarioGuardado = usuarioServicios.save(usuario);
-			return ResponseEntity.created(new URI("/usuarios/"+usuarioGuardado.getId())).body(usuarioGuardado);
-		}catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-		}*/
 	}
 	
     @PutMapping(value = "/{id}")
@@ -89,7 +74,7 @@ public class UsuarioRest {
         return respuesta;
     }
 	
-	@DeleteMapping (value = "delete/{id}")
+	@DeleteMapping (value = "/{id}")
 	private ResponseEntity<Usuario> deleteUsuario(@PathVariable ("id") Long id){
 		
         Usuario usuarioDelete = usuarioServicios.delete(id);
@@ -99,20 +84,6 @@ public class UsuarioRest {
         }
         return respuesta;
 		
-		/*   //   log.info("Fetching & Deleting User with id {}", id);
-
-        Usuario usuario = usuarioServicios.findById(id).get();
-        
-        if ( usuario == null ) {
-    //        log.error("Unable to delete. User with id {} not found.", id);
-            return  ResponseEntity.notFound().build();
-        }
-       
-        usuario = usuarioServicios.delete(usuario);
-        return  ResponseEntity.ok(usuario);
-		
-	//	usuarioServicios.delete(id);
-	//	return ResponseEntity.ok(!(usuarioServicios.findById(id).isPresent()));*/
 	}
 	
     private String formatoMensaje( BindingResult result){

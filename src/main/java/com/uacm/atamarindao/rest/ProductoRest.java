@@ -21,7 +21,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.uacm.atamarindao.modelo.MensajeError;
 import com.uacm.atamarindao.modelo.Producto;
 import com.uacm.atamarindao.servicios.ProductoServiciosImp;
 
@@ -31,10 +30,7 @@ public class ProductoRest {
 	
 	@Autowired
 	private ProductoServiciosImp productoServicios;
-	/*
-	@Autowired
-	private ProductoRepositorio productoRepositorio;
-	*/
+
 	@GetMapping
 	private ResponseEntity<List<Producto>> getAllProductos() {
 		List<Producto> productos = productoServicios.findAll();

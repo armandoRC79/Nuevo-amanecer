@@ -34,17 +34,7 @@ public class UsuarioServiciosImp implements UsuarioServicios{
 
 	@Override
 	public Usuario update(Usuario usuario) {
- /*       Usuario usuarioDB = findById(usuario.getId()).get();
-        if (usuarioDB == null){
-            return  null;
-        }
-        usuarioDB.setNombre(usuario.getNombre());
-        usuarioDB.setPassword(usuario.getPassword());
-        usuarioDB.setRol(usuario.getRol());
-
-        return  usuarioRepositorio.save(usuarioDB);*/
-		
-		
+	
         Usuario usuarioDB = findById(usuario.getId()).get();
         Usuario uRespuesta = null;
        
@@ -65,8 +55,8 @@ public class UsuarioServiciosImp implements UsuarioServicios{
         Usuario uRespuesta = null;
         
         if (usuarioDB != null){
-            usuarioDB.setStatus("DELETED");
-            uRespuesta = usuarioDB;
+        	usuarioDB.setStatus("DELETED");
+        	uRespuesta = usuarioDB;
         }
 
         return usuarioRepositorio.save(uRespuesta);

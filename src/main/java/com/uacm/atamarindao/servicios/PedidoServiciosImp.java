@@ -2,190 +2,102 @@ package com.uacm.atamarindao.servicios;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.uacm.atamarindao.modelo.Pedido;
+import com.uacm.atamarindao.modelo.Producto;
+import com.uacm.atamarindao.modelo.ProductoPedido;
+import com.uacm.atamarindao.modelo.Usuario;
 import com.uacm.atamarindao.repositorio.PedidoRepositorio;
 
 @Service
-public class PedidoServiciosImp implements PedidoRepositorio{
+public class PedidoServiciosImp implements PedidoServicios{
 	
 	@Autowired
-	PedidoRepositorio pedidoRepositorio;
+	private PedidoRepositorio pedidoRepositorio;
+	
+	@Autowired
+	private ProductoServicios productoServicios;
+	
+	@Autowired
+	private UsuarioServicios usuarioServicios;
 	
 
 	@Override
 	public List<Pedido> findAll() {
 		return pedidoRepositorio.findAll();
 	}
+	
+
+    @Override
+    public Pedido save(Pedido pedido) {
+    	
+        Pedido pedidoDB = pedidoRepositorio.findByNumberoPedido(pedido.getNumberoPedido());
+        if (pedidoDB !=null){
+            return  pedidoDB;
+        }
+        pedido.setStatus("CREATED");
+        pedidoDB = pedidoRepositorio.save(pedido);
+        pedidoDB.getProductos().forEach( invoiceItem -> {
+            productoServicios.updateStock( invoiceItem.getId(), invoiceItem.getCantidad() * -1);
+        });
+
+        return pedidoDB;
+    }
+
 
 	@Override
-	public List<Pedido> findAll(Sort sort) {
-		return pedidoRepositorio.findAll(sort);
+	public Pedido findById(Long id) {
+        Pedido pedido = pedidoRepositorio.findById(id).orElse(null);
+        if (pedido != null){
+            Usuario usuario = usuarioServicios.findById(pedido.getUsuarioId()).get();
+            pedido.setUsuario(usuario);
+            List<ProductoPedido> listaProducto = pedido.getProductos().stream().map(productoPedido -> {
+                Producto producto = productoServicios.findById(productoPedido.getId()).get();
+                productoPedido.setProducto(producto);
+                return productoPedido;
+            }).collect(Collectors.toList());
+            pedido.setProductos(listaProducto);
+        }
+        return pedido ;
 	}
+
+
+	@Override
+	public Pedido update(Pedido pedido) {
+        Pedido pedidoDB = findById(pedido.getId());
+        if (pedidoDB == null){
+            return  null;
+        }
+        pedidoDB.setUsuarioId(pedido.getUsuarioId());
+        pedidoDB.setNumberoPedido(pedido.getNumberoPedido());
+        pedidoDB.getProductos().clear();
+        pedidoDB.setProductos(pedido.getProductos());
+        return pedidoRepositorio.save(pedidoDB);
+	}
+
+
+	@Override
+	public Pedido delete(Pedido pedido) {
+        Pedido pedidoDB = findById(pedido.getId());
+        if (pedidoDB == null){
+            return  null;
+        }
+        pedidoDB.setStatus("DELETED");
+        return pedidoRepositorio.save(pedidoDB);
+	} 
 	
 	public List<Pedido> findAllByUser(Long id){
 		List<Pedido> pedidosUsuario = new ArrayList<>();
-		List<Pedido> pedidos = pedidoRepositorio.findAll();
+		List<Pedido> pedidos = pedidoRepositorio.findByUsuarioId(id);
 		
-		for(Pedido pedido:pedidos) {
-			if(pedido.getUsuario().getId() == id) {
-				pedidosUsuario.add(pedido);
-			}	
+		if(!pedidos.isEmpty()) {
+			pedidosUsuario = pedidos;
 		}
 		
 		return pedidosUsuario;
 	}
-	
-
-	@Override
-	public List<Pedido> findAllById(Iterable<Long> ids) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Pedido> List<S> saveAll(Iterable<S> entities) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void flush() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public <S extends Pedido> S saveAndFlush(S entity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void deleteInBatch(Iterable<Pedido> entities) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void deleteAllInBatch() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Pedido getOne(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Pedido> List<S> findAll(Example<S> example) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Pedido> List<S> findAll(Example<S> example, Sort sort) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Page<Pedido> findAll(Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Pedido> S save(S entity) {
-		return pedidoRepositorio.save(entity);
-	}
-
-	@Override
-	public Optional<Pedido> findById(Long id) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean existsById(Long id) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public long count() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void deleteById(Long id) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void delete(Pedido entity) {
-		pedidoRepositorio.delete(entity);
-		
-	}
-
-	@Override
-	public void deleteAll(Iterable<? extends Pedido> entities) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void deleteAll() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public <S extends Pedido> Optional<S> findOne(Example<S> example) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Pedido> Page<S> findAll(Example<S> example, Pageable pageable) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public <S extends Pedido> long count(Example<S> example) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public <S extends Pedido> boolean exists(Example<S> example) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public List<Pedido> findByUsuarioId(Long usuarioId) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Pedido findByNumberoPedido(String numberoPedido) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }
