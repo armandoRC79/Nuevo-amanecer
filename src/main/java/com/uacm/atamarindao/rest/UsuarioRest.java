@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+//import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +32,7 @@ public class UsuarioRest {
 	@Autowired
 	private UsuarioServiciosImp usuarioServicios;
 	
+//	@CrossOrigin(origins = "http://localhost:4200")
 	@GetMapping
 	private ResponseEntity<List<Usuario>> getAllUsuarios() {
 		List<Usuario> usuarios = usuarioServicios.findAll();
@@ -52,6 +54,7 @@ public class UsuarioRest {
         return respuesta;
     }
 	
+  //  @CrossOrigin(origins = "http://localhost:4200")
 	@PostMapping
 	private ResponseEntity<Usuario> saveUsuario(@RequestBody Usuario usuario, BindingResult result){
 		

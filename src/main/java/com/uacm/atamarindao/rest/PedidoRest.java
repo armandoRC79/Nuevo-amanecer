@@ -57,12 +57,12 @@ public class PedidoRest {
         
         return respuesta;
 	}
-	/*
-	@GetMapping ("{id}")
+	
+	@GetMapping ("byUser/{id}")
 	public ResponseEntity<List<Pedido>> getAllPedidosByUsuario(@PathVariable ("id") Long idUsuario){
 		return ResponseEntity.ok(pedidoServicios.findAllByUser(idUsuario));
 	}
-	*/
+	
 	@PostMapping
 	private ResponseEntity<Pedido> savePedido(@Valid @RequestBody Pedido pedido, BindingResult result){
 		
